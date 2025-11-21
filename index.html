@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Anchor - Daily Word</title>
+    <!-- Load Tailwind CSS --><script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Base styles */
+        /* --- IMPROVED FIX for Mobile Full-Height Background --- */
+        html {
+            height: 100%; 
+            width: 100%; /* Ensure the root element spans full width */
+        }
+        body {
+            /* Crucial: Set height to 100vh to guarantee it fills the viewport. */
+            height: 100vh; 
+            width: 100vw; /* Ensure it spans full width */
+            margin: 0; /* Remove default body margin */
+            padding: 0; /* Remove default body padding */
+            font-family: 'Inter', sans-serif;
+            transition: background 1s ease-in-out; /* Smooth background transition */
+            /* Ensure the background covers the entire element */
+            background-size: cover; 
+        }
+        /* Custom scrollbar for a cleaner look */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #1e293b; }
+        ::-webkit-scrollbar-thumb { background: #475569; border-radius: 10px; }
+
+        /* The background gradient will be set by JavaScript based on the theme */
+    </style>
+</head>
+<body class="flex items-center justify-center p-4">
+
+    <!-- Main Card Container --><!-- Classes for card/border/shadow will be dynamically updated by JS --><div id="verse-card" class="backdrop-blur-md rounded-3xl shadow-2xl p-6 md:p-10 w-full max-w-sm flex flex-col items-center transition-all duration-500 ease-in-out">
+        
+        <!-- Header / Logo --><div id="header-logo" class="text-4xl font-extrabold mb-2 leading-none tracking-tight">
+            THE ANCHOR
+        </div>
+        <p id="header-subtext" class="text-sm mb-8 uppercase tracking-widest border-b pb-2">Daily Word</p>
+
+        <!-- Verse Content Area --><div class="text-center mb-8">
+            <p id="verse-text" class="text-white text-xl md:text-2xl italic leading-relaxed mb-4 transition-opacity duration-300">
+                <!-- Verse text will be inserted here --></p>
+            <!-- Reference --><div id="verse-reference" class="text-base font-semibold tracking-wider">
+                <!-- Reference will be inserted here --></div>
+        </div>
+
+        <!-- Refresh Button --><!-- Button classes will be dynamically updated by JS --><button id="refresh-button" class="flex items-center space-x-2 px-6 py-3 text-gray-900 font-bold rounded-full shadow-lg transition transform hover:scale-105 active:scale-95">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0110.802 6.602c.007.033.013.065.018.098h-3.882a1 1 0 00-.773 1.636l3.868 4.835a1 1 0 001.554 0l3.868-4.835a1 1 0 00-.773-1.636h-3.882c-.005-.033-.011-.065-.018-.098A9.002 9.002 0 005.055 5.564L4.854 5.363A1 1 0 014 5.099V3a1 1 0 011-1z" clip-rule="evenodd" />
+            </svg>
+            <span>New Anchor</span>
+        </button>
+
+        <!-- Footer Credit --><div id="footer-credit" class="mt-8 text-xs border-t pt-4 w-full text-center">
+            Designed by Trinity Seven
+        </div>
+    </div>
+
+    <script>
+        // --- 1. THEME DEFINITIONS ---
+        const themes = [
+            // Theme 1: OBSIDIAN (Deep Charcoal/Black with Cyan Accents) - REPLACEMENT FOR PLUM
+            {
+                name: 'OBSIDIAN',
+                bg_gradient: 'linear-gradient(135deg, #0f0f0f 0%, #1c1917 100%)', // Near black fading to dark stone
+                card_classes: 'bg-gray-900/90 border-gray-700/50',
+                accent_classes: 'text-cyan-400',
+                button_classes: 'bg-cyan-500 hover:bg-cyan-400',
+                border_classes: 'border-gray-800',
+                verse_text_classes: 'text-white', 
+                verses: [
+                    {
+                        text: 'Rejoice always, pray continually, give thanks in all circumstances; for this is God’s will for you in Christ Jesus.',
+                        ref: '1 Thessalonians 5:16-18 (NIV)'
+                    },
+                    {
+                        text: 'Be joyful in hope, patient in affliction, faithful in prayer.',
+                        ref: 'Romans 12:12 (NIV)'
+                    },
+                    {
+                        text: 'The joy of the Lord is your strength.',
+                        ref: 'Nehemiah 8:10 (NIV)'
+                    },
+                    {
+                        text: 'Whatever is true, noble, right, pure, lovely, admirable—if anything is excellent or praiseworthy—think about such things.',
+                        ref: 'Philippians 4:8 (NIV)'
+                    },
+                    {
+                        text: 'Commit your way to the Lord; trust in him and he will do this.',
+                        ref: 'Psalm 37:5 (NIV)'
+                    },
+                    {
+                        text: 'Trust in the Lord with all your heart and lean not on your own understanding; in all your ways submit to him, and he will make your paths straight.',
+                        ref: 'Proverbs 3:5-6 (NIV)'
+                    },
+                    {
+                        text: 'For God did not give us a spirit of timidity, but of power, love and self-control.',
+                        ref: '2 Timothy 1:7 (NIV)'
+                    }
+                ]
+            },
+            // Theme 2: WATER (Deep Blues and Silver/Sky) - 7 VERSES
+            {
+                name: 'WATER',
+                bg_gradient: 'linear-gradient(135deg, #102a43 0%, #334b65 100%)',
+                card_classes: 'bg-blue-900/80 border-blue-800/50',
+                accent_classes: 'text-blue-300',
+                button_classes: 'bg-sky-400 hover:bg-sky-300',
+                border_classes: 'border-blue-700',
+                verse_text_classes: 'text-white',
+                verses: [
+                    {
+                        text: 'He leads me beside still waters, he refreshes my soul.',
+                        ref: 'Psalm 23:2-3 (NIV)'
+                    },
+                    {
+                        text: 'So do not fear, for I am with you; do not be dismayed, for I am your God. I will strengthen you and help you.',
+                        ref: 'Isaiah 41:10 (NIV)'
+                    },
+                    {
+                        text: 'Taste and see that the Lord is good; blessed is the one who takes refuge in him.',
+                        ref: 'Psalm 34:8 (NIV)'
+                    },
+                    {
+                        text: 'Whoever believes in me, as the Scripture has said, streams of living water will flow from within him.',
+                        ref: 'John 7:38 (NIV)'
+                    },
+                    {
+                        text: 'You will keep in perfect peace those whose minds are steadfast, because they trust in you.',
+                        ref: 'Isaiah 26:3 (NIV)'
+                    },
+                    {
+                        text: 'When you pass through the waters, I will be with you; and when you pass through the rivers, they will not sweep over you.',
+                        ref: 'Isaiah 43:2 (NIV)'
+                    },
+                    {
+                        text: 'Peace I leave with you; my peace I give you. I do not give to you as the world gives. Do not let your hearts be troubled and do not be afraid.',
+                        ref: 'John 14:27 (NIV)'
+                    }
+                ]
+            },
+            // Theme 3: FOREST (Lush Greens and Emerald) - 7 VERSES
+            {
+                name: 'FOREST',
+                bg_gradient: 'linear-gradient(135deg, #0f3427 0%, #2e4d41 100%)',
+                card_classes: 'bg-teal-900/80 border-teal-800/50',
+                accent_classes: 'text-emerald-300',
+                button_classes: 'bg-emerald-600 hover:bg-emerald-500',
+                border_classes: 'border-teal-700',
+                verse_text_classes: 'text-white',
+                verses: [
+                    {
+                        text: 'Blessed is the one who trusts in the Lord, whose confidence is in him. They will be like a tree planted by the water.',
+                        ref: 'Jeremiah 17:7-8 (NIV)'
+                    },
+                    {
+                        text: 'They are like a tree planted by streams of water, which yields its fruit in season and whose leaf does not wither.',
+                        ref: 'Psalm 1:3 (NIV)'
+                    },
+                    {
+                        text: 'The righteous flourish like the palm tree and grow like a cedar in Lebanon.',
+                        ref: 'Psalm 92:12 (NIV)'
+                    },
+                    {
+                        text: 'Faith is confidence in what we hope for and assurance about what we do not see.',
+                        ref: 'Hebrews 11:1 (NIV)'
+                    },
+                    {
+                        text: 'I can do all this through him who gives me strength.',
+                        ref: 'Philippians 4:13 (NIV)'
+                    },
+                    {
+                        text: 'But those who hope in the Lord will renew their strength. They will soar on wings like eagles; they will run and not grow weary, they will walk and not be faint.',
+                        ref: 'Isaiah 40:31 (NIV)'
+                    },
+                    {
+                        text: 'Be very careful, then, how you live—not as unwise but as wise, making the most of every opportunity, because the days are evil.',
+                        ref: 'Ephesians 5:15-16 (NIV)'
+                    }
+                ]
+            },
+            // Theme 4: STONE (Dark Gray/Slate and Warm Gray) - 7 VERSES
+            {
+                name: 'STONE',
+                bg_gradient: 'linear-gradient(135deg, #27272a 0%, #44403c 100%)',
+                card_classes: 'bg-stone-900/80 border-stone-800/50',
+                accent_classes: 'text-stone-300',
+                button_classes: 'bg-gray-400 hover:bg-gray-300',
+                border_classes: 'border-stone-700',
+                verse_text_classes: 'text-white',
+                verses: [
+                    {
+                        text: 'The Lord is my rock, my fortress and my deliverer; my God is my rock, in whom I take refuge.',
+                        ref: 'Psalm 18:2 (NIV)'
+                    },
+                    {
+                        text: 'Therefore everyone who hears these words of mine and puts them into practice is like a wise man who built his house on the rock.',
+                        ref: 'Matthew 7:24-25 (NIV)'
+                    },
+                    {
+                        text: 'Do not conform to the pattern of this world, but be transformed by the renewing of your mind.',
+                        ref: 'Romans 12:2 (NIV)'
+                    },
+                    {
+                        text: 'We demolish arguments and every pretension that sets itself up against the knowledge of God.',
+                        ref: '2 Corinthians 10:5 (NIV)'
+                    },
+                    {
+                        text: 'He alone is my rock and my salvation; he is my fortress, I will not be shaken.',
+                        ref: 'Psalm 62:6 (NIV)'
+                    },
+                    {
+                        text: 'The eternal God is your refuge, and underneath are the everlasting arms.',
+                        ref: 'Deuteronomy 33:27 (NIV)'
+                    },
+                    {
+                        text: 'If God is for us, who can be against us?',
+                        ref: 'Romans 8:31 (NIV)'
+                    }
+                ]
+            },
+            // Theme 5: EMBER (Rich, Deep Reds and Warm Oranges) - REPLACEMENT FOR FIRE
+            {
+                name: 'EMBER',
+                bg_gradient: 'linear-gradient(135deg, #4a0404 0%, #6b1414 100%)', // Deeper red fading to warm red
+                card_classes: 'bg-red-900/80 border-red-800/50',
+                accent_classes: 'text-orange-300',
+                button_classes: 'bg-orange-500 hover:bg-orange-400', // Brighter orange button
+                border_classes: 'border-red-700',
+                verse_text_classes: 'text-white',
+                verses: [
+                    {
+                        text: 'Be strong and courageous. Do not be afraid; do not be discouraged, for the Lord your God will be with you wherever you go.',
+                        ref: 'Joshua 1:9 (NIV)'
+                    },
+                    {
+                        text: 'for our “God is a consuming fire.”',
+                        ref: 'Hebrews 12:29 (NIV)'
+                    },
+                    {
+                        text: 'The Lord himself goes before you and will be with you; he will never leave you nor forsake you.',
+                        ref: 'Deuteronomy 31:8 (NIV)'
+                    },
+                    {
+                        text: 'This hope is a strong and trustworthy anchor for the soul.',
+                        ref: 'Hebrews 6:19 (NIV)'
+                    },
+                    {
+                        text: 'He must become greater; I must become less.',
+                        ref: 'John 3:30 (NIV)'
+                    },
+                    {
+                        text: 'May the God of hope fill you with all joy and peace as you trust in him, so that you may overflow with hope by the power of the Holy Spirit.',
+                        ref: 'Romans 15:13 (NIV)'
+                    },
+                    {
+                        text: 'The fear of man will prove to be a snare, but whoever trusts in the Lord is kept safe.',
+                        ref: 'Proverbs 29:25 (NIV)'
+                    }
+                ]
+            },
+            // Theme 6: SAND (Light Desert Tones) - 7 VERSES
+            {
+                name: 'SAND',
+                bg_gradient: 'linear-gradient(135deg, #574b3d 0%, #7e6c5a 100%)',
+                card_classes: 'bg-amber-100/90 border-amber-300/50',
+                accent_classes: 'text-yellow-800',
+                button_classes: 'bg-amber-300 hover:bg-amber-400',
+                border_classes: 'border-amber-400',
+                verse_text_classes: 'text-gray-900', // <-- Dark text for light card contrast
+                verses: [
+                    {
+                        text: 'Let us not become weary in doing good, for at the proper time we will reap a harvest if we do not give up.',
+                        ref: 'Galatians 6:9 (NIV)'
+                    },
+                    {
+                        text: 'So we fix our eyes not on what is seen, but on what is unseen, since what is seen is temporary, but what is unseen is eternal.',
+                        ref: '2 Corinthians 4:18 (NIV)'
+                    },
+                    {
+                        text: 'Let us run with perseverance the race marked out for us, fixing our eyes on Jesus.',
+                        ref: 'Hebrews 12:1-2 (NIV)'
+                    },
+                    {
+                        text: 'For God so loved the world that he gave his one and only Son, that whoever believes in him shall not perish but have eternal life.',
+                        ref: 'John 3:16 (NIV)'
+                    },
+                    {
+                        text: 'For we live by faith, not by sight.',
+                        ref: '2 Corinthians 5:7 (NIV)'
+                    },
+                    {
+                        text: 'For it is by grace you have been saved, through faith—and this is not from yourselves, it is the gift of God.',
+                        ref: 'Ephesians 2:8 (NIV)'
+                    },
+                    {
+                        text: 'But the one who stands firm to the end will be saved.',
+                        ref: 'Matthew 24:13 (NIV)'
+                    }
+                ]
+            },
+            // Theme 7: SKY (Dawn/Dusk Colors) - 7 VERSES
+            {
+                name: 'SKY',
+                bg_gradient: 'linear-gradient(135deg, #37578a 0%, #87a7d4 100%)',
+                card_classes: 'bg-blue-700/80 border-blue-600/50',
+                accent_classes: 'text-yellow-100',
+                button_classes: 'bg-blue-400 hover:bg-blue-300',
+                border_classes: 'border-blue-500',
+                verse_text_classes: 'text-white',
+                verses: [
+                    {
+                        text: 'The heavens declare the glory of God; the skies proclaim the work of his hands.',
+                        ref: 'Psalm 19:1 (NIV)'
+                    },
+                    {
+                        text: 'I lift up my eyes to the mountains—where does my help come from? My help comes from the Lord, the Maker of heaven and earth.',
+                        ref: 'Psalm 121:1-2 (NIV)'
+                    },
+                    {
+                        text: 'Everything is possible for one who believes.',
+                        ref: 'Mark 9:23 (NIV)'
+                    },
+                    {
+                        text: '“For I know the plans I have for you,” declares the Lord, “plans to prosper you and not to harm you, plans to give you hope and a future.”',
+                        ref: 'Jeremiah 29:11 (NIV)'
+                    },
+                    {
+                        text: 'When these things begin to take place, stand up and lift up your heads, because your redemption is drawing near.',
+                        ref: 'Luke 21:28 (NIV)'
+                    },
+                    {
+                        text: 'Call to me and I will answer you and tell you great and unsearchable things you do not know.',
+                        ref: 'Jeremiah 33:3 (NIV)'
+                    },
+                    {
+                        text: 'The steadfast love of the Lord never ceases; his mercies never come to an end; they are new every morning; great is your faithfulness.',
+                        ref: 'Lamentations 3:22-23 (ESV)'
+                    }
+                ]
+            },
+        ];
+
+        let lastThemeIndex = -1; // Changed to lastThemeIndex for clarity
+
+        // --- 2. DYNAMIC DISPLAY FUNCTION ---
+        function displayRandomVerseAndTheme() {
+            // Element lookups
+            const body = document.body;
+            const card = document.getElementById('verse-card');
+            const reference = document.getElementById('verse-reference');
+            const button = document.getElementById('refresh-button');
+            const logo = document.getElementById('header-logo');
+            const subtext = document.getElementById('header-subtext');
+            const footer = document.getElementById('footer-credit');
+            const verseTextElement = document.getElementById('verse-text');
+
+            // 1. Select Theme (ensure it's different from the last theme)
+            let randomThemeIndex;
+            do {
+                randomThemeIndex = Math.floor(Math.random() * themes.length);
+            } while (randomThemeIndex === lastThemeIndex && themes.length > 1);
+            
+            lastThemeIndex = randomThemeIndex;
+            const selectedTheme = themes[randomThemeIndex];
+
+            // 2. Select Verse within the chosen Theme
+            const randomVerseIndex = Math.floor(Math.random() * selectedTheme.verses.length);
+            const selectedVerse = selectedTheme.verses[randomVerseIndex];
+
+            // 3. Apply Theme Colors and Classes (Same logic as before)
+            
+            // Remove old classes and apply new ones for card/button/accents
+            const elementsToUpdate = [card, reference, button, logo, subtext, footer];
+            
+            elementsToUpdate.forEach(el => {
+                // Safely remove all old Tailwind classes (crude but effective)
+                el.className = el.className.split(' ').filter(c => 
+                    !c.includes('bg-') && 
+                    !c.includes('border-') && 
+                    !c.includes('text-') &&
+                    !c.includes('hover:bg-')
+                ).join(' ');
+            });
+
+            // Re-apply static and new dynamic classes
+            card.className += ` ${selectedTheme.card_classes} border ${selectedTheme.border_classes} backdrop-blur-md rounded-3xl shadow-2xl p-6 md:p-10 w-full max-w-sm flex flex-col items-center transition-all duration-500 ease-in-out`;
+            
+            // Apply accent colors
+            reference.className += ` ${selectedTheme.accent_classes} text-base font-semibold tracking-wider`;
+            logo.className += ` ${selectedTheme.accent_classes} text-4xl font-extrabold mb-2 leading-none tracking-tight`;
+            subtext.className += ` ${selectedTheme.accent_classes} text-sm mb-8 uppercase tracking-widest border-b pb-2 ${selectedTheme.border_classes}`;
+            footer.className += ` ${selectedTheme.accent_classes} mt-8 text-xs border-t pt-4 w-full text-center ${selectedTheme.border_classes}`;
+            
+            // Note: Button is fully replaced with new classes
+            button.className = `flex items-center space-x-2 px-6 py-3 text-gray-900 font-bold rounded-full shadow-lg transition transform hover:scale-105 active:scale-95 ${selectedTheme.button_classes}`;
+
+            // Apply verse text color (Default is 'text-white', overridden by verse_text_classes if present)
+            const verseTextColor = selectedTheme.verse_text_classes || 'text-white';
+            
+            // Remove existing text classes from verseTextElement
+            verseTextElement.className = verseTextElement.className.split(' ').filter(c => 
+                !c.includes('text-')
+            ).join(' '); 
+
+            // Re-apply static and dynamic text class
+            verseTextElement.className += ` ${verseTextColor} text-xl md:text-2xl italic leading-relaxed mb-4 transition-opacity duration-300`;
+
+            // 4. Apply Background Gradient
+            body.style.background = selectedTheme.bg_gradient;
+
+
+            // 5. Update Verse Content (with smooth fade)
+            verseTextElement.style.opacity = '0'; 
+            setTimeout(() => {
+                verseTextElement.textContent = `“${selectedVerse.text}”`;
+                reference.textContent = selectedVerse.ref;
+                verseTextElement.style.opacity = '1';
+            }, 300); // Wait for fade out to complete before changing text
+        }
+
+        // Event listener for the refresh button
+        document.getElementById('refresh-button').addEventListener('click', displayRandomVerseAndTheme);
+
+        // Initial load
+        displayRandomVerseAndTheme();
+    </script>
+</body>
+</html>
